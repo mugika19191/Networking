@@ -1,0 +1,29 @@
+Right now the network is using a **/28 mask (255.255.255.240)**, which gives subnets of 16 IP addresses each (14 usable hosts).
+
+The IPs you have:
+
+* `95.198.14.2`
+* `95.198.14.18`
+* `95.198.14.19`
+* `95.198.14.253`
+* `95.198.14.254`
+
+These addresses belong to **different /28 subnets**, for example:
+
+* `95.198.14.0/28` → usable 1–14 (includes `.2`)
+* `95.198.14.16/28` → usable 17–30 (includes `.18`, `.19`)
+* `95.198.14.240/28` → usable 241–254 (includes `.253`, `.254`)
+
+Because you are routing between **different subnets**, this setup works with routing rules as defined.
+
+---
+
+If you change the mask to **255.255.255.0 (/24)**, all of these IPs (`95.198.14.x`) would **fall into the same subnet (95.198.14.0/24)**.
+
+That would cause:
+
+1. Devices would **think they are on the same local network** and would try to ARP for each other directly.
+2. Your routers would **not forward packets**, because routing between interfaces in the same subnet doesn’t work as expected.
+3. The gateways (`95.198.14.1`, `.18`, `.253`, `.254`) would no longer make sense as separate next-hops, since everything appears "local".
+
+Basically, with /24, **you lose the separation into multiple routed subnets**, so your routing table setup no longer applies.
